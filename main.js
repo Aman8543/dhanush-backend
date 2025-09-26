@@ -12,7 +12,7 @@ const authRouter = require("./src/router/userAuth");
 const makeadminrout= require("./src/router/admincreter");
 
 app.use(cors({
-  origin:'http://localhost:5173', // or '*' to allow all
+  origin:["https://dhanush-shop.vercel.app",'http://localhost:5173'], // or '*' to allow all
   credentials: true // if you need cookies or auth headers
 }));
 
