@@ -7,6 +7,7 @@ const redisClient = require("../database/redisClient");
 const usermidleware = async (req,res,next)=>{
     
     try{
+        
         const {token}=req.cookies;
         if(!token){
             throw new Error("token is not persent");
@@ -29,7 +30,7 @@ const usermidleware = async (req,res,next)=>{
             throw new Error("invalid token");
         }
         req.result=result;
-       
+        console.log(req.result);
         next();
     }
     catch(err){

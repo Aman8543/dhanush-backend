@@ -2,7 +2,7 @@ const uservalidator = require("../validator.js/uservalidator");
 const User = require("../schema/userSchema");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt");
-
+const redisClient = require("../database/redisClient");
 const userRegister = async(req,res)=>{
 
     try{
@@ -40,8 +40,8 @@ const userRegister = async(req,res)=>{
 }
 
 const login = async (req,res)=>{
-
-    try{
+      try{
+        
         const {phone, password} = req.body;
 
         if(!phone)
@@ -68,13 +68,16 @@ const login = async (req,res)=>{
             throw new Error("Invalid Credentials");
 
         const token =  jwt.sign({_id:user._id , phone:phone},process.env.JWT_KEY,{expiresIn: 60*60*365});
+       
         res.cookie('token',token,{maxAge: 60*60*1000*365});
         res.status(200).json({
             user:reply,
             message:"User login Successfully"
         });
+       
     }
     catch(err){
+       
         res.status(401).json({
             Error:"In valid credentials"
         });
@@ -85,21 +88,26 @@ const login = async (req,res)=>{
 // logOut feature
 
 const logout = async(req,res)=>{
-    
+   
     try{
         const {token} = req.cookies;
         const payload = jwt.decode(token);
 
-        await redisClient.set(`token:${token}`,'Blocked');
-        await redisClient.expireAt(`token:${token}`,payload.exp);
+       
+        const x= await redisClient.set(`token:${token}`,'Blocked');
+       
+        const y=await redisClient.expireAt(`token:${token}`,payload.exp);
+        
     //    Token add kar dung Redis ke blockList
     //    Cookies ko clear kar dena.....
-
+    
     res.cookie("token",null,{expires: new Date(Date.now())});
+    
     res.send("Logged Out Succesfully");
 
     }
     catch(err){
+        console.log(err);
        res.status(503).json("Error: "+err);
     }
 }
