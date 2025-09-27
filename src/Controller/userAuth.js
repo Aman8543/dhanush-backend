@@ -15,7 +15,7 @@ const userRegister = async(req,res)=>{
         const user = await User.create(req.body);
        
         const token = jwt.sign({_id:user._id,name:name}, process.env.JWT_KEY,{expiresIn: 60*60*24*365});
-        res.cookie("token",token,{maxAge:1000 * 60 * 60 * 24 * 365});
+        res.cookie("token",token,{maxAge:1000 * 60 * 60 * 24 * 365,sameSite: 'None'});
 
         
         res.json({
@@ -69,7 +69,7 @@ const login = async (req,res)=>{
 
         const token =  jwt.sign({_id:user._id , phone:phone},process.env.JWT_KEY,{expiresIn: 60*60*365});
        
-        res.cookie('token',token,{maxAge: 60*60*1000*365});
+        res.cookie('token',token,{maxAge: 60*60*1000*365,sameSite: 'None'});
         res.status(200).json({
             user:reply,
             message:"User login Successfully"
